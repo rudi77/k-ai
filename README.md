@@ -1,4 +1,6 @@
-# Invoice Information Extraction Web Application
+# K-AI
+
+ UNDER CONSTRUCTION! 
 
 A modern web application built with Next.js for extracting and managing invoice information using AI. The application features a clean, responsive UI with a dark sidebar, real-time invoice processing, and comprehensive invoice management capabilities.
 
