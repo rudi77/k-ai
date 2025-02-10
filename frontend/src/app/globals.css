@@ -24,4 +24,23 @@
   .card {
     @apply rounded-lg bg-white p-6 shadow-sm transition-shadow hover:shadow-md;
   }
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+    margin-left: 0;
+  }
+  50% {
+    width: 70%;
+    margin-left: 0;
+  }
+  100% {
+    width: 20%;
+    margin-left: 100%;
+  }
+}
+
+.animate-progress {
+  animation: progress 1.5s ease-in-out infinite;
 } 

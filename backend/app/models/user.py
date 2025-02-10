@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.db.base import Base
+from app.db.base_class import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -13,5 +13,5 @@ class User(Base):
     system_prompt = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
-    # Relationship with invoices
-    invoices = relationship("Invoice", back_populates="user") 
+    # Relationship with invoices - using string reference to avoid circular import
+    invoices = relationship("Invoice", back_populates="user", lazy="dynamic") 

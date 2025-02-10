@@ -3,17 +3,51 @@
 import React, { useCallback, useState } from 'react'
 import { Upload, File, X } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
+import { useRouter } from 'next/navigation'
 
 export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null)
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const router = useRouter()
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0])
+  const uploadFile = async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
       setUploadStatus('processing')
-      // TODO: Implement file upload and processing
-      setTimeout(() => setUploadStatus('completed'), 2000) // Temporary simulation
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/upload`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail || 'Failed to upload invoice')
+      }
+
+      const data = await response.json()
+      setUploadStatus('completed')
+      
+      // Redirect to the invoice detail page after successful upload
+      setTimeout(() => {
+        router.push(`/invoice/${data.id}`)
+      }, 1500)
+    } catch (error) {
+      console.error('Upload error:', error)
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to upload invoice')
+      setUploadStatus('failed')
+    }
+  }
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const selectedFile = acceptedFiles[0]
+      setFile(selectedFile)
+      setErrorMessage('')
+      await uploadFile(selectedFile)
     }
   }, [])
 
@@ -24,11 +58,13 @@ export default function UploadPage() {
       'image/png': ['.png'],
     },
     maxFiles: 1,
+    maxSize: 10 * 1024 * 1024, // 10MB max file size
   })
 
   const removeFile = () => {
     setFile(null)
     setUploadStatus('idle')
+    setErrorMessage('')
   }
 
   return (
@@ -57,7 +93,7 @@ export default function UploadPage() {
               <span className="text-blue-600">browse</span>
             </p>
             <p className="text-sm text-gray-500">
-              Supports PDF and PNG files
+              Supports PDF and PNG files (max 10MB)
             </p>
           </div>
         ) : (
@@ -82,6 +118,7 @@ export default function UploadPage() {
                   removeFile()
                 }}
                 className="rounded-full p-1 hover:bg-gray-200"
+                disabled={uploadStatus === 'processing'}
               >
                 <X className="h-5 w-5 text-gray-500" />
               </button>
@@ -89,17 +126,33 @@ export default function UploadPage() {
             
             <div className="text-center">
               {uploadStatus === 'processing' && (
-                <p className="text-sm font-medium text-blue-600">Processing invoice...</p>
+                <div>
+                  <div className="mb-2 h-1 w-full overflow-hidden rounded-full bg-gray-200">
+                    <div className="h-1 animate-progress bg-blue-600"></div>
+                  </div>
+                  <p className="text-sm font-medium text-blue-600">Processing invoice...</p>
+                </div>
               )}
               {uploadStatus === 'completed' && (
                 <p className="text-sm font-medium text-green-600">
-                  Invoice processed successfully!
+                  Invoice processed successfully! Redirecting...
                 </p>
               )}
               {uploadStatus === 'failed' && (
-                <p className="text-sm font-medium text-red-600">
-                  Failed to process invoice. Please try again.
-                </p>
+                <div>
+                  <p className="text-sm font-medium text-red-600">
+                    {errorMessage || 'Failed to process invoice. Please try again.'}
+                  </p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (file) uploadFile(file)
+                    }}
+                    className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  >
+                    Retry Upload
+                  </button>
+                </div>
               )}
             </div>
           </div>
