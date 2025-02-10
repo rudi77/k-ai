@@ -1,0 +1,135 @@
+Below is the adapted backend description that aligns with our frontend requirements for the Invoice Information Extraction application:
+
+---
+
+# Document 3: Backend Development (Including Database)
+
+## 3.1. Overview and Objectives
+
+The backend is responsible for handling user authentication, invoice uploads, invoice processing via the OpenAI API, and storing both the original invoice files and their extracted data. Built with FastAPI for its asynchronous capabilities and rapid development, this backend provides a RESTful API that supports our frontend routes (e.g., /upload, /history, /invoice/[id], /auth, /settings).
+
+## 3.2. Backend Architecture
+
+### 3.2.1. Core Framework
+- **FastAPI:**  
+  - Offers asynchronous RESTful endpoints.
+  - Uses Pydantic for request validation and response formatting.
+  - Ensures high performance for processing file uploads and external API calls.
+
+### 3.2.2. API Endpoints
+
+These endpoints are designed to serve the corresponding frontend pages:
+
+#### Authentication
+- **POST /auth/login:**  
+  - Validates user credentials.
+  - Returns a JWT token upon successful authentication.
+- **POST /auth/register:**  
+  - (If needed) Allows new users to create an account.
+- **Additional endpoints:**  
+  - For password recovery and session management as required by the frontend.
+
+#### Invoice Handling
+- **POST /invoices/upload:**  
+  - Accepts invoice files (PDF or PNG) uploaded from the /upload page.
+  - Validates file type and size.
+  - Forwards the file to the OpenAI API (GPT-4o-mini) for processing.
+  - Processes and standardizes the JSON response.
+  - Saves the original invoice in the filestore and the extracted data in the database.
+- **GET /invoices:**  
+  - Returns a list of uploaded invoices (including metadata such as upload date, file name, and a brief extraction summary) for display on the /history page.
+- **GET /invoices/{invoice_id}:**  
+  - Provides detailed information for a specific invoice.
+  - Returns the file reference (or URL) and the full extracted JSON data to be rendered on the detailed invoice view (/invoice/[id]).
+
+#### User Settings
+- **GET /settings:**  
+  - Retrieves the current user settings (e.g., OpenAI API key, system extraction prompt).
+- **PUT /settings:**  
+  - Allows secure updating of user settings.
+  - Returns updated settings to confirm changes on the frontend /settings page.
+
+*Note:* In addition to these endpoints, consider implementing a search or filter endpoint (e.g., GET /invoices/search?query=...) to support the filtering functionality on the History page.
+
+## 3.3. Database Design and Integration
+
+### 3.3.1. Database Technology
+- **PostgreSQL:**  
+  - Chosen for its robustness and scalability.
+  - Stores invoice metadata, the extracted JSON data, and user details.
+
+### 3.3.2. Database Schema
+
+#### Users Table
+- **Columns:**
+  - `id` (primary key)
+  - `username` or `email`
+  - `password_hash`
+  - `api_key` (optional, for OpenAI integration)
+  - Additional preferences (e.g., system prompt)
+
+#### Invoices Table
+- **Columns:**
+  - `id` (primary key)
+  - `user_id` (foreign key linking to the Users table)
+  - `upload_date`
+  - `file_path` (path or URL pointing to the stored invoice file)
+  - `extracted_data` (stored as a JSONB column containing the formatted extraction)
+  - Other metadata (e.g., processing status, error messages)
+
+### 3.3.3. ORM and Migrations
+- **ORM:**  
+  - SQLAlchemy (or an alternative ORM) is used to map models to database tables.
+- **Migrations:**  
+  - Alembic (or a similar tool) manages schema changes and database migrations over time.
+
+## 3.4. File Storage
+
+- **Filestore:**  
+  - A secure directory or cloud storage solution (e.g., AWS S3) is designated for storing uploaded invoice files.
+  - Implements strict file naming and path management to avoid collisions and maintain data integrity.
+
+## 3.5. Integration with External Services
+
+- **OpenAI API Integration:**
+  - A dedicated service layer formats requests to OpenAI’s REST API.
+  - Manages error handling, ensuring that API errors are caught and communicated clearly to the frontend.
+  - Parses and standardizes the extracted information before saving it to the database.
+  - Ensures that the JSON response format is consistent with what the frontend expects.
+
+## 3.6. Integration with Frontend
+
+- **API and CORS Configuration:**
+  - The backend endpoints are designed to directly support frontend routes (e.g., /upload, /history, /invoice/[id], /auth, /settings).
+  - CORS is properly configured to allow requests from the frontend domain.
+  - All responses include standardized JSON payloads and appropriate HTTP status codes to facilitate smooth integration with the React/Next.js frontend.
+
+## 3.7. Testing, Deployment, and Security
+
+### Testing
+- **Unit and Integration Tests:**
+  - Use Pytest to cover all API endpoints, file handling, and database operations.
+- **Security Testing:**
+  - Validate all authentication flows.
+  - Test against common vulnerabilities (e.g., SQL injection, XSS).
+
+### Deployment
+- **Containerization:**
+  - Docker is used to containerize the backend, ensuring consistency across development and production environments.
+- **CI/CD Pipeline:**
+  - Implement continuous integration pipelines to run tests and automate deployments.
+- **Monitoring and Logging:**
+  - Tools like Prometheus/Grafana (or alternatives) monitor application performance.
+  - Centralized logging is set up to capture errors and usage data.
+
+### Security Best Practices
+- **JWT Authentication:**
+  - All protected routes validate JWT tokens.
+- **Environment Variables:**
+  - Sensitive information (e.g., database credentials, API keys) is managed via environment variables.
+- **Data Encryption:**
+  - Encrypt sensitive data in transit (using HTTPS) and at rest.
+
+---
+
+This backend document now reflects a design that seamlessly supports the frontend application. It provides clear, consistent endpoints and data structures that match the frontend’s needs for invoice upload, history display, detailed invoice views, authentication, and user settings management.

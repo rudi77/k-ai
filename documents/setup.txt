@@ -1,0 +1,172 @@
+Below is the modified setup template tailored for the Invoice Information Extraction Web Application.
+
+---
+
+```
+Create detailed components with these requirements:
+1. Use 'use client' directive for client-side components
+2. Style with Tailwind CSS utility classes for responsive design
+3. Use Lucide React for icons (from lucide-react package). Do NOT use other UI libraries unless requested
+4. Use stock photos from picsum.photos where appropriate, only valid URLs you know exist
+5. Configure next.config.js image remotePatterns to enable stock photos from picsum.photos
+6. Create root layout.tsx page that wraps necessary navigation items to all pages
+7. MUST implement the navigation element items in their rightful place i.e. Left sidebar, Top header
+8. Accurately implement necessary grid layouts
+9. Follow proper import practices:
+   - Use @/ path aliases
+   - Keep component imports organized
+   - Update current src/app/page.tsx with new comprehensive code
+   - Don't forget root route (page.tsx) handling
+   - You MUST complete the entire prompt before stopping
+
+Invoice Information Extraction Web Application UI
+</summary_title>
+
+<image_analysis>
+
+1. Navigation Elements:
+- Left sidebar with: Upload, History, Settings, Logout
+- Top header with: Application title ("Invoice Extractor"), a search bar for filtering invoices on the History page, and a user profile section (displaying avatar and user options)
+- Optionally include a brief system status or current extraction prompt indicator in the header
+
+2. Layout Components:
+- Sidebar width: 200px (compact to maximize workspace)
+- Main content area: Flexible width with a minimum of 800px for detailed invoice views
+- Header height: 64px
+- Card containers (used for invoice summary cards in History): 320px x 200px
+- Spacing between cards: 20px
+- Padding inside cards: 16px
+
+3. Content Sections:
+- **Upload Page:** 
+  - Drag-and-drop area with file preview and progress indicators
+  - Instant feedback for file upload and processing status
+- **History Page:** 
+  - List view displaying uploaded invoices with metadata (upload date, file name, extraction summary)
+  - Search/filter functionality to locate invoices quickly
+- **Authentication Page:** 
+  - Login form with fields for username/email and password
+  - (Optionally) Registration and password recovery functionality
+- **Settings Page:** 
+  - Form to update the OpenAI API key, system extraction prompt, and other user preferences
+- **Invoice Detail Page:** 
+  - Detailed view combining the original invoice preview (PDF or image) and the formatted JSON extraction results
+
+4. Interactive Controls:
+- File upload input with drag-and-drop support and clear progress indication
+- Search input field for filtering the History page
+- Navigation menu items within the sidebar (clickable links)
+- Secure login form with interactive validations
+- Update settings form with input fields, toggles, and submission buttons
+- Logout button integrated into the header or sidebar
+- Real-time status indicators for file uploads and invoice processing
+
+5. Colors:
+- Primary Blue: #2563EB (for action buttons, links, and highlights)
+- Background: #F9FAFB
+- Text Dark: #111827
+- Accent Green: #10B981 (for success states)
+- Warning Amber: #F59E0B (for errors or alerts)
+- Card Background: #FFFFFF
+
+6. Grid/Layout Structure:
+- 12-column grid system for structuring main content
+- Sidebar: Fixed width on the left; main content adjusts responsively
+- Responsive breakpoints at 1280px, 1024px, 768px, and 640px
+</image_analysis>
+
+<development_planning>
+
+1. Project Structure:
+```
+src/
+├── components/
+│   ├── layout/
+│   │   ├── Sidebar.tsx       // Contains navigation items: Upload, History, Settings, Logout
+│   │   ├── Header.tsx        // Includes the app title, search bar, and user profile section
+│   │   └── RootLayout.tsx    // Wraps all pages with the header and sidebar
+│   ├── pages/
+│   │   ├── Upload/
+│   │   │   └── UploadPage.tsx    // Invoice file upload and processing interface
+│   │   ├── History/
+│   │   │   └── HistoryPage.tsx   // Displays list of past uploads with search/filter
+│   │   ├── Auth/
+│   │   │   └── AuthPage.tsx      // Login (and optionally, registration) form
+│   │   └── Settings/
+│   │       └── SettingsPage.tsx  // Form for updating API key, extraction prompt, and preferences
+│   └── shared/
+│       ├── InvoiceCard.tsx   // Reusable component for displaying invoice summary details
+│       └── FormElements.tsx  // Standardized UI components (inputs, buttons, etc.)
+├── assets/
+│   └── images/   // Stock images from picsum.photos and other assets
+├── styles/
+│   └── globals.css  // Global Tailwind CSS configurations and custom styles
+├── hooks/
+│   └── useAuth.ts  // Custom hook for managing authentication state
+└── utils/
+    └── api.ts    // API utility for interfacing with the backend endpoints
+```
+
+2. Key Features:
+- Instant invoice file upload with real-time processing feedback via the OpenAI API
+- Historical record of uploaded invoices, searchable and filterable
+- Secure user authentication with session management
+- User settings to configure the OpenAI API key and extraction prompt
+- Responsive, modern UI designed with Tailwind CSS and custom components
+
+3. State Management:
+```typescript
+interface AppState {
+  auth: {
+    user: User;
+    isAuthenticated: boolean;
+  };
+  invoice: {
+    uploadStatus: 'idle' | 'processing' | 'completed' | 'failed';
+    list: Invoice[];
+    selectedInvoice: Invoice | null;
+  };
+  settings: {
+    openaiApiKey: string;
+    extractionPrompt: string;
+  };
+}
+```
+
+4. Routes:
+```typescript
+const routes = [
+  '/',             // Redirects to Upload or Dashboard landing page
+  '/upload',       // Invoice upload interface
+  '/history',      // List view of previously processed invoices
+  '/auth',         // User authentication (login/registration)
+  '/settings'      // User settings and preferences configuration
+];
+```
+
+5. Component Architecture:
+- **RootLayout:** Global layout wrapping all pages with the Sidebar and Header.
+- **Sidebar:** Navigation component providing links to Upload, History, Settings, and Logout.
+- **Header:** Displays the application title, integrated search bar, and user profile.
+- **UploadPage:** Interface for uploading invoices and displaying processing progress.
+- **HistoryPage:** List view for past invoices, including a search/filter bar.
+- **AuthPage:** User login (and registration) form with validations.
+- **SettingsPage:** Form for updating API key, system prompt, and other account preferences.
+- **InvoiceCard:** Reusable component for rendering a summary of an invoice in the History view.
+- **Shared FormElements:** Consistent design for input fields, buttons, and form components across the app.
+
+6. Responsive Breakpoints:
+```scss
+$breakpoints: (
+  'xl': 1280px,
+  'lg': 1024px,
+  'md': 768px,
+  'sm': 640px
+);
+```
+</development_planning>
+```
+
+---
+
+This modified setup template ensures that your Invoice Information Extraction application uses the required frontend technologies (React with Tailwind CSS and Lucide React), adheres to a modern, responsive design with proper layout and navigation, and follows best practices for project structure and component architecture.

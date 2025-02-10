@@ -1,0 +1,94 @@
+Below is the modified template for the frontend description, tailored to the Invoice Information Extraction application:
+
+```
+Next.js route structure based on navigation menu items (excluding main route). Make sure to wrap all routes with the appropriate layout component:
+
+Routes:
+- /upload
+- /history
+- /invoice/[id]
+- /auth
+- /settings
+
+Page Implementations:
+
+/upload:
+Core Purpose: Provide users with an interface to upload invoice documents (PDF or PNG) and initiate real-time processing.
+Key Components:
+- Drag-and-drop file uploader with a traditional file selection fallback
+- File preview and upload progress indicator
+- Real-time status feedback (e.g., “Processing…”, “Extraction Complete”)
+Layout Structure:
+- Integrated within MainLayout which includes a left sidebar and top header
+- Prominent, full-width upload area with clear call-to-action buttons
+- Responsive design ensuring ease-of-use on both desktop and mobile
+
+/history:
+Core Purpose: Display a searchable and filterable list of previously uploaded invoices.
+Key Components:
+- Invoice summary cards showing key metadata (upload date, file name, and extraction summary)
+- Search bar and filter panel for quick invoice retrieval
+- Pagination or infinite scroll for managing a long list of invoices
+Layout Structure:
+- Grid-based layout (e.g., 3-4 columns on desktop, stacked view on mobile)
+- Wrapped in MainLayout with consistent navigation elements
+
+/invoice/[id]:
+Core Purpose: Present a detailed view of an individual invoice, combining the original file preview and the JSON extraction result.
+Key Components:
+- Embedded PDF/PNG viewer for the original invoice document
+- JSON viewer or code block display for the extracted information
+- Action buttons (e.g., download, share, or reprocess)
+Layout Structure:
+- Split layout with a left panel for the file preview and a right panel for extraction details
+- Embedded within MainLayout for consistency, with a responsive switch to a stacked layout on mobile
+
+/auth:
+Core Purpose: Handle user authentication through login (and optionally registration and password recovery).
+Key Components:
+- Login form with fields for email/username and password
+- Input validation, error messaging, and secure submission
+- Optional registration form and password recovery features
+Layout Structure:
+- Uses a dedicated AuthLayout that omits the sidebar to focus the user on authentication
+- Centered, card-based form layout optimized for clarity and simplicity on all devices
+
+/settings:
+Core Purpose: Allow users to manage their account preferences and configure essential settings.
+Key Components:
+- Form to update the OpenAI API key and system extraction prompt
+- Additional fields for user-specific preferences and notifications
+- Clear feedback on save/cancel actions and any validation errors
+Layout Structure:
+- Can be implemented as a tabbed or sectioned interface for better organization
+- Integrated within MainLayout to maintain overall site navigation
+
+Layouts:
+
+MainLayout:
+- Applicable Routes: /upload, /history, /invoice/[id], /settings
+- Core Components:
+  - Navigation Header displaying the application title (“Invoice Extractor”), a search bar (particularly useful on the History page), and a user profile section (with avatar and logout options)
+  - Left Sidebar with navigation links: Upload, History, Settings, and Logout
+  - Optional footer and breadcrumb navigation for improved usability
+- Responsive Behavior:
+  - Collapsible sidebar on smaller screens
+  - Sticky header and, if needed, a bottom navigation bar on mobile devices
+
+AuthLayout:
+- Applicable Routes: /auth
+- Core Components:
+  - Minimalistic, centered container for login (and registration) forms
+  - Focused design to reduce distractions and enhance user concentration on authentication
+- Responsive Behavior:
+  - Full-screen form layout that adapts gracefully to mobile devices
+
+ContentLayout (Optional for Detailed Invoice View):
+- Applicable Routes: /invoice/[id]
+- Core Components:
+  - Split view design that clearly distinguishes between the invoice file preview and the JSON extraction details
+- Responsive Behavior:
+  - On mobile devices, stack the panels vertically to ensure readability and accessibility
+```
+
+This modified template reflects the core requirements of the Invoice Information Extraction application, ensuring a modern, responsive design with clear navigation and intuitive page layouts using Next.js, Tailwind CSS, and best practices for component architecture.
