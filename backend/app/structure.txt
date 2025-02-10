@@ -1,0 +1,28 @@
+app/
+├── api/
+│   ├── __init__.py
+│   ├── v1/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── invoices.py
+│   │   └── settings.py
+├── core/
+│   ├── __init__.py
+│   ├── config.py
+│   └── security.py
+├── db/
+│   ├── __init__.py
+│   ├── base.py
+│   └── session.py
+├── models/
+│   ├── __init__.py
+│   ├── user.py
+│   └── invoice.py
+├── schemas/
+│   ├── __init__.py
+│   ├── user.py
+│   └── invoice.py
+└── services/
+    ├── __init__.py
+    ├── auth.py
+    └── openai.py 
