@@ -142,75 +142,83 @@ export default function InvoiceDetailPage({
 
         {/* Extracted Data */}
         <div className="rounded-lg border bg-white p-6">
-          <h3 className="mb-4 text-lg font-medium text-gray-900">
+          <h3 className="mb-6 text-lg font-medium text-gray-900">
             Extracted Information
           </h3>
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Summary Information */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-y-6">
               <div>
-                <p className="text-sm font-medium text-gray-500">Invoice Number</p>
-                <p className="text-sm text-gray-900">
-                  {invoice.extracted_data.invoice_number}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Invoice Number</p>
+                  <p className="text-sm text-gray-900">
+                    {invoice.extracted_data.invoice_number}
+                  </p>
+                </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Date</p>
-                <p className="text-sm text-gray-900">
-                  {invoice.extracted_data.date}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Date</p>
+                  <p className="text-sm text-gray-900">
+                    {invoice.extracted_data.date}
+                  </p>
+                </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Vendor</p>
-                <p className="text-sm text-gray-900">
-                  {invoice.extracted_data.vendor}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Vendor</p>
+                  <p className="text-sm text-gray-900">
+                    {invoice.extracted_data.vendor}
+                  </p>
+                </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Total Amount</p>
-                <p className="text-sm text-gray-900">
-                  ${invoice.extracted_data.total_amount.toFixed(2)}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-500">Total Amount</p>
+                  <p className="text-sm text-gray-900">
+                    ${invoice.extracted_data.total_amount.toFixed(2)}
+                  </p>
+                </div>
               </div>
             </div>
 
             {/* Line Items */}
             <div>
-              <h4 className="mb-3 text-sm font-medium text-gray-900">
+              <h4 className="mb-4 text-sm font-medium text-gray-900">
                 Line Items
               </h4>
-              <div className="rounded-lg border">
+              <div className="overflow-hidden rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                         Description
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500">
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                         Qty
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500">
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                         Unit Price
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500">
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                         Total
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 bg-white">
                     {invoice.extracted_data.line_items.map((item, index) => (
                       <tr key={index}>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                        <td className="whitespace-pre-line px-6 py-4 text-sm text-gray-900">
                           {item.description}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
+                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-900">
                           {item.quantity}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
+                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-900">
                           ${item.unit_price.toFixed(2)}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
+                        <td className="whitespace-nowrap px-6 py-4 text-right text-sm text-gray-900">
                           ${item.total.toFixed(2)}
                         </td>
                       </tr>
