@@ -75,6 +75,7 @@ class OpenAIService:
 
         # Parse the response
         response_content = response.choices[0].message.content
+        logger.info(f"Response content: {response_content}")
         return json.loads(response_content)
 
     def extract_text_from_pdf(self, file_path):

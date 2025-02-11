@@ -1,35 +1,31 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { File, Download, RefreshCw } from 'lucide-react'
 
-// Mock data - replace with actual data fetching
-const mockInvoiceData = {
-  id: '1',
-  fileName: 'invoice-001.pdf',
-  uploadDate: '2024-02-10',
-  status: 'completed',
-  fileUrl: 'https://example.com/invoice.pdf',
-  extractedData: {
-    total: '$1,234.56',
-    date: '2024-02-01',
-    vendor: 'Acme Corp',
-    invoiceNumber: 'INV-001',
-    lineItems: [
-      {
-        description: 'Product A',
-        quantity: 2,
-        unitPrice: '$500.00',
-        total: '$1,000.00',
-      },
-      {
-        description: 'Product B',
-        quantity: 1,
-        unitPrice: '$234.56',
-        total: '$234.56',
-      },
-    ],
-  },
+// Update interfaces to match backend schema
+interface LineItem {
+  description: string
+  quantity: number
+  unit_price: number  // Changed from string to number
+  total: number       // Changed from string to number
+}
+
+interface ExtractedData {
+  invoice_number: string  // Changed from camelCase to snake_case
+  date: string
+  total_amount: number   // Changed from 'total' string to 'total_amount' number
+  vendor: string
+  line_items: LineItem[] // Changed from camelCase to snake_case
+}
+
+interface Invoice {
+  id: string
+  file_name: string     // Changed from camelCase to snake_case
+  upload_date: string   // Changed from camelCase to snake_case
+  status: string
+  file_url: string      // Changed from camelCase to snake_case
+  extracted_data: ExtractedData  // Changed from camelCase to snake_case
 }
 
 export default function InvoiceDetailPage({
@@ -37,6 +33,82 @@ export default function InvoiceDetailPage({
 }: {
   params: { id: string }
 }) {
+  const [invoice, setInvoice] = useState<Invoice | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchInvoiceData()
+  }, [params.id])
+
+  const fetchInvoiceData = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/invoices/${params.id}`,
+        {
+          credentials: 'include',
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch invoice data')
+      }
+
+      const data = await response.json()
+      setInvoice(data)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch invoice data')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleReprocess = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/invoices/${params.id}/reprocess`,
+        {
+          method: 'POST',
+          credentials: 'include',
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to reprocess invoice')
+      }
+
+      // Refresh the invoice data after reprocessing
+      await fetchInvoiceData()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reprocess invoice')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    )
+  }
+
+  if (!invoice) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="text-gray-500">Invoice not found</div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -80,25 +152,25 @@ export default function InvoiceDetailPage({
               <div>
                 <p className="text-sm font-medium text-gray-500">Invoice Number</p>
                 <p className="text-sm text-gray-900">
-                  {mockInvoiceData.extractedData.invoiceNumber}
+                  {invoice.extracted_data.invoice_number}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Date</p>
                 <p className="text-sm text-gray-900">
-                  {mockInvoiceData.extractedData.date}
+                  {invoice.extracted_data.date}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Vendor</p>
                 <p className="text-sm text-gray-900">
-                  {mockInvoiceData.extractedData.vendor}
+                  {invoice.extracted_data.vendor}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Amount</p>
                 <p className="text-sm text-gray-900">
-                  {mockInvoiceData.extractedData.total}
+                  ${invoice.extracted_data.total_amount.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -127,24 +199,22 @@ export default function InvoiceDetailPage({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {mockInvoiceData.extractedData.lineItems.map(
-                      (item, index) => (
-                        <tr key={index}>
-                          <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
-                            {item.description}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
-                            {item.quantity}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
-                            {item.unitPrice}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
-                            {item.total}
-                          </td>
-                        </tr>
-                      )
-                    )}
+                    {invoice.extracted_data.line_items.map((item, index) => (
+                      <tr key={index}>
+                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
+                          {item.description}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
+                          {item.quantity}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
+                          ${item.unit_price.toFixed(2)}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-900">
+                          ${item.total.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

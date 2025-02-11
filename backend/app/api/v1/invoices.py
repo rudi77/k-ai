@@ -100,6 +100,7 @@ async def get_invoice(
             )
         
         logger.info(f"Successfully retrieved invoice {invoice_id}")
+        logger.info(f"Invoice data: {invoice}")
         return invoice
     except HTTPException:
         raise
