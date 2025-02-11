@@ -180,3 +180,7 @@ node_modules/
 .env.development.local
 
 
+backend/uploads
+backend/uploads/*
+backend/logs/*
+backend/logs

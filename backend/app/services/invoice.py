@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class InvoiceService:
     def __init__(self):
-        self.openai_service = OpenAIService()
+        self.openai_service : OpenAIService = OpenAIService()
         logger.info("InvoiceService initialized")
 
     async def create_invoice(
@@ -79,7 +79,7 @@ class InvoiceService:
             logger.debug(f"Updated invoice {invoice_id} status to processing")
 
             # Process the invoice using OpenAI
-            result = await self.openai_service.process_invoice(invoice.file_path)
+            result = await self.openai_service.extract_invoice_data(invoice.file_path)
             
             # Update invoice with results
             invoice.extracted_data = result
