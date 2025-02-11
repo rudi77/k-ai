@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.services.invoice import InvoiceService
 from app.schemas.invoice import Invoice
+from fastapi.responses import FileResponse
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -109,4 +111,59 @@ async def get_invoice(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching invoice"
+        )
+
+@router.get("/{invoice_id}/pdf")
+async def get_invoice_pdf(
+    invoice_id: int,  # Changed from str to int to match other endpoints
+    db: Session = Depends(get_db),
+    current_user_id: int = 1  # Temporary placeholder, matching other endpoints
+):
+    """Get invoice PDF file"""
+    logger.info(f"Fetching PDF for invoice {invoice_id}")
+    
+    try:
+        # Get the invoice using the existing get_invoice function
+        invoice = invoice_service.get_invoice(db, invoice_id)
+        if not invoice:
+            logger.warning(f"Invoice {invoice_id} not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Invoice not found"
+            )
+        
+        # Check authorization
+        if invoice.user_id != current_user_id:
+            logger.warning(f"User {current_user_id} attempted to access invoice {invoice_id} PDF belonging to user {invoice.user_id}")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to access this invoice"
+            )
+
+        # Get the file path from invoice service
+        pdf_path = invoice_service.get_invoice_file_path(invoice)
+        
+        if not os.path.exists(pdf_path):
+            logger.error(f"PDF file not found at path: {pdf_path}")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="PDF file not found"
+            )
+
+        return FileResponse(
+            path=pdf_path,
+            media_type="application/pdf",
+            filename=invoice.original_filename,
+            headers={
+                "Content-Disposition": f"inline; filename={invoice.original_filename}",
+                "Access-Control-Allow-Origin": "*",
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching PDF for invoice {invoice_id}: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching PDF file"
         ) 

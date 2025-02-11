@@ -8,6 +8,7 @@ from app.models.invoice import Invoice
 from app.schemas.invoice import InvoiceCreate
 from app.services.openai import OpenAIService
 from app.core.config import settings
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -113,4 +114,9 @@ class InvoiceService:
             Invoice.user_id == user_id
         ).offset(skip).limit(limit).all()
         logger.info(f"Found {len(invoices)} invoices for user {user_id}")
-        return invoices 
+        return invoices
+
+    def get_invoice_file_path(self, invoice: Invoice) -> str:
+        """Get the full path to the invoice PDF file"""
+        logger.info(f"Invoice file path: {invoice.file_path}")
+        return invoice.file_path

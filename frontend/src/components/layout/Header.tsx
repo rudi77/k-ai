@@ -25,8 +25,8 @@ export default function Header() {
         
         <div className="flex items-center space-x-3">
           <div className="text-right">
-            <div className="text-sm font-medium text-gray-900">John Doe</div>
-            <div className="text-xs text-gray-500">Admin</div>
+            <div className="text-sm font-medium text-gray-900">Kai Schnitzer</div>
+            <div className="text-xs text-gray-500">Customer</div>
           </div>
           <div className="h-9 w-9 overflow-hidden rounded-full bg-gray-200">
             <User className="h-full w-full p-1 text-gray-600" />
